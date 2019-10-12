@@ -1,122 +1,162 @@
 package labyrinth.controller;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import labyrinth.model.Logic;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Controller implements Initializable {
-    VBox playField;
-    private TextField[][] matrixOfRoom = new TextField[8][8];
-    private Button[][] matrixOfDoor = new Button[15][8];
-    private int[][] matrixOfCash = new int[8][8];
-    private int[][] matrixOfOpenDoors = new int[15][8];
+public class Controller {
+    private Logic logic;
+    private int[][] matrixOfRoom;
+    private List<Integer>[] matrixOfDoor = new ArrayList[15];
+    private boolean isStart = false;
+    private boolean isEnd = false;
+    private TextField start;
+    private TextField end;
 
+    public TextField[][] matrixOfTField = new TextField[8][8];
+    public List<Button>[] matrixOfButton = new ArrayList[15];
+
+    public final Pane pane = new Pane();
+    public final TextField cashField = new TextField();
+    public final Button startButton = new Button();
+    public final Button reset = new Button();
+    public final VBox playField = new VBox();
 
     public Controller() {
+        pane.getChildren().addAll(playField, cashField, startButton, reset);
 
-        playField = new VBox();
-        playField.prefHeight(770);
-        playField.prefWidth(770);
-        //заполняем массив закрытыми(0) дверьми
-        refreshDoors();
-
-        for (int i = 1; i < 16; i++) {
+        for (int i = 0; i < 15; i++) {
 
             HBox hBox = new HBox();
             hBox.prefHeight(770);
             hBox.prefWidth(70);
 
-            if (i % 2 == 1)
+            matrixOfButton[i] = new ArrayList<>();
+            matrixOfDoor[i] = new ArrayList<>();
+
+            if (i % 2 == 0)
                 for (int j = 0; j < 15; j++) {
                     if (j % 2 == 0) {
 
                         TextField textField = new TextField();
-                        textField.prefHeight(70);
-                        textField.prefWidth(70);
+                        textField.setPrefSize(70, 70);
 
                         hBox.getChildren().add(textField);
-                        matrixOfRoom[(int)Math.ceil(i / 2)][(int)Math.ceil(j / 2)] = textField;
+                        matrixOfTField[i / 2][j / 2] = textField;
                     }
                     else {
 
                         Button button = new Button();
-                        button.prefWidth(30);
-                        button.prefHeight(70);
-
-                        int finalI = i;
-                        int finalJ = j;
-                        button.setOnAction(e -> {
-                            if (matrixOfOpenDoors[finalI - 1][(int)Math.floor(finalJ / 2)] == 0)
-
-                                matrixOfOpenDoors[finalI - 1][(int)Math.floor(finalJ / 2)] = 1;
-
-                            else
-                                matrixOfOpenDoors[finalI - 1][(int)Math.floor(finalJ / 2)] = 0;
-                        });
+                        button.setPrefSize(30, 70);
 
                         hBox.getChildren().add(button);
-                        matrixOfDoor[i - 1][(int)Math.floor(j / 2)] = button;
+                        matrixOfButton[i].add(button);
+                        matrixOfDoor[i].add(0);
                     }
                 }
-            else
+            else {
+                hBox.setSpacing(30);
+
                 for (int j = 0; j < 8; j++) {
 
                     Button button = new Button();
-                    button.prefWidth(70);
-                    button.prefHeight(30);
-
-                    int finalI = i;
-                    int finalJ = j;
-                    button.setOnAction(e -> {
-                        if (matrixOfOpenDoors[finalI - 1][finalJ] == 0)
-
-                            matrixOfOpenDoors[finalI - 1][finalJ] = 1;
-
-                        else
-                            matrixOfOpenDoors[finalI - 1][finalJ] = 0;
-                    });
+                    button.setPrefSize(70, 30);
 
                     hBox.getChildren().add(button);
-                    matrixOfDoor[i - 1][j] = button;
+                    matrixOfButton[i].add(button);
+                    matrixOfDoor[i].add(0);
                 }
+            }
             playField.getChildren().add(hBox);
         }
-
     }
 
-    @FXML
-    private TextField cash;
+    public void doorAction(int x, int y) {
+        if (matrixOfDoor[x].get(y).equals(0)) {
+            matrixOfButton[x].get(y).setStyle("-fx-background-color: white");
+            matrixOfDoor[x].set(y, 1);
+        }
+        else {
+            matrixOfButton[x].get(y).setStyle("-fx-background-color");
+            matrixOfDoor[x].set(y, 0);
+        }
+    }
 
-    @FXML
-    private Button startButton;
+    public void roomAction(int x, int y) {
+        if (isStart == false && matrixOfTField[x][y] != end) {
 
-    @FXML
-    private void startButtonAction(ActionEvent e) {
+            matrixOfTField[x][y].setStyle("-fx-background-color: yellow");
+            matrixOfTField[x][y].setText("start");
 
-        for (int i = 0; i < 15; i++)
+            isStart = true;
+            start = matrixOfTField[x][y];
+            return;
+        }
+        if (isStart == true && matrixOfTField[x][y] == start) {
+
+            matrixOfTField[x][y].setStyle("-fx-background-color");
+            matrixOfTField[x][y].setText("");
+
+            isStart = false;
+            start = null;
+            return;
+        }
+        if (isEnd == false && matrixOfTField[x][y] != start) {
+            matrixOfTField[x][y].setStyle("-fx-background-color: yellow");
+            matrixOfTField[x][y].setText("end");
+
+            isEnd = true;
+            end = matrixOfTField[x][y];
+            return;
+        }
+        if (isEnd == true && matrixOfTField[x][y] == end) {
+
+            matrixOfTField[x][y].setStyle("-fx-background-color");
+            matrixOfTField[x][y].setText("");
+
+            isEnd = false;
+            end = null;
+        }
+    }
+
+    public void resetAction() {
+        for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
-                matrixOfCash[i][j] = Integer.parseInt(matrixOfRoom[i][j].getText());
+                matrixOfTField[i][j].setStyle("-fx-background-color");
+                matrixOfTField[i][j].setText("");
+
+                matrixOfRoom = null;
+                isEnd = false;
+                isStart = false;
+                start = null;
+                end = null;
             }
-        Logic logic = new Logic(matrixOfCash, matrixOfOpenDoors, Integer.parseInt(cash.getText()));
+
+        for (int i = 0; i < 15; i++) {
+            matrixOfButton[i].forEach(button -> button.setStyle("-fx-background-color"));
+            int size = matrixOfDoor[i].size();
+            for (int j = 0; j < size; j++)
+                matrixOfDoor[i].set(j, 0);
+        }
     }
 
-    public void refreshDoors() {
+    public void startAction() {
+        int[][] matrixOfRoom = new int[8][8];
 
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
-                matrixOfOpenDoors[i][j] = 0;
+                if (matrixOfTField[i][j] != end && matrixOfTField[i][j] != start)
+                matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
+                else
+                    matrixOfRoom[i][j] = 0;
             }
-    }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+        logic = new Logic(matrixOfRoom, matrixOfDoor);
     }
 }

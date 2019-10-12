@@ -1,11 +1,10 @@
 package labyrinth.controller;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import labyrinth.view.View;
 
 public class Main extends Application {
 
@@ -14,13 +13,15 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
-        Parent root = (Pane)FXMLLoader.load(getClass().getResource("../view/mainWindow.fxml"));
+    public void start(Stage primaryStage) {
 
         Controller controller = new Controller();
-        ((Pane) root).getChildren().add(controller.playField);
-        controller.playField.setLayoutX(215);
-        controller.playField.setLayoutY(115);
+
+        View view = new View(controller);
+        view.create();
+
+        Group root = new Group();
+        root.getChildren().add(controller.pane);
 
         primaryStage.setTitle("Cash labyrinth");
         primaryStage.setScene(new Scene(root, 1200, 1000));
