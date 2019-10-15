@@ -13,8 +13,4 @@ public class Graph {
             adjList[0] = new LinkedList<>();
         }
     }
-
-    public void addRoom(Room room, int indexOfList) {
-        adjList[indexOfList].add(room);
-    }
 }

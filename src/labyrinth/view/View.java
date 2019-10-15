@@ -11,7 +11,17 @@ public class View {
     }
 
 
-    public void create() {
+    public void createMain() {
+        controller.errorLabel.setText("Значения введены некорректно");
+        controller.errorLabel.setPrefSize(200, 40);
+        controller.errorLabel.setLayoutX(10);
+        controller.errorLabel.setLayoutY(15);
+
+        controller.playField.setStyle("-fx-background-color: linear-gradient(#f2f2f2, #d6d6d6),\n" +
+                "linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),\n" +
+                "linear-gradient(#dddddd 0%, #f6f6f6 50%);"
+        );
+
         controller.cashField.setPromptText("Начальная сумма");
         controller.cashField.setPrefSize(120, 25);
         controller.cashField.setLayoutX(1030);

@@ -1,10 +1,12 @@
 package labyrinth.controller;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import labyrinth.model.Logic;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class Controller {
     private boolean isEnd = false;
     private TextField start;
     private TextField end;
+    private int cash;
 
     public TextField[][] matrixOfTField = new TextField[8][8];
     public List<Button>[] matrixOfButton = new ArrayList[15];
@@ -27,6 +30,9 @@ public class Controller {
     public final Button startButton = new Button();
     public final Button reset = new Button();
     public final VBox playField = new VBox();
+
+    public final Label errorLabel = new Label();
+    public final Stage errorWindow = new Stage();
 
     public Controller() {
         pane.getChildren().addAll(playField, cashField, startButton, reset);
@@ -149,10 +155,21 @@ public class Controller {
     public void startAction() {
         int[][] matrixOfRoom = new int[8][8];
 
+        try {
+            cash = Integer.parseInt(cashField.getText());
+        }  catch (NumberFormatException e) {
+            errorWindow.show();
+        }
+
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
-                if (matrixOfTField[i][j] != end && matrixOfTField[i][j] != start)
-                matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
+                if (matrixOfTField[i][j] != end && matrixOfTField[i][j] != start) {
+                    try {
+                    matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
+                    } catch (NumberFormatException e) {
+                        errorWindow.show();
+                    }
+                }
                 else
                     matrixOfRoom[i][j] = 0;
             }
