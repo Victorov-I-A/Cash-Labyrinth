@@ -99,6 +99,7 @@ public class Controller {
 
             matrixOfTField[x][y].setStyle("-fx-background-color: yellow");
             matrixOfTField[x][y].setText("start");
+            matrixOfTField[x][y].setEditable(false);
 
             isStart = true;
             start = matrixOfTField[x][y];
@@ -108,6 +109,7 @@ public class Controller {
 
             matrixOfTField[x][y].setStyle("-fx-background-color");
             matrixOfTField[x][y].setText("");
+            matrixOfTField[x][y].setEditable(true);
 
             isStart = false;
             start = null;
@@ -116,6 +118,7 @@ public class Controller {
         if (isEnd == false && matrixOfTField[x][y] != start) {
             matrixOfTField[x][y].setStyle("-fx-background-color: yellow");
             matrixOfTField[x][y].setText("end");
+            matrixOfTField[x][y].setEditable(false);
 
             isEnd = true;
             end = matrixOfTField[x][y];
@@ -125,6 +128,7 @@ public class Controller {
 
             matrixOfTField[x][y].setStyle("-fx-background-color");
             matrixOfTField[x][y].setText("");
+            matrixOfTField[x][y].setEditable(true);
 
             isEnd = false;
             end = null;
@@ -136,6 +140,7 @@ public class Controller {
             for (int j = 0; j < 8; j++) {
                 matrixOfTField[i][j].setStyle("-fx-background-color");
                 matrixOfTField[i][j].setText("");
+                matrixOfTField[i][j].setEditable(true);
 
                 matrixOfRoom = null;
                 isEnd = false;
@@ -158,6 +163,7 @@ public class Controller {
         try {
             cash = Integer.parseInt(cashField.getText());
         }  catch (NumberFormatException e) {
+            errorLabel.setText("Поле с начальной суммой не заполнено");
             errorWindow.show();
         }
 
@@ -167,6 +173,7 @@ public class Controller {
                     try {
                     matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
                     } catch (NumberFormatException e) {
+                        errorLabel.setText("Данные в поле " + i + 1 + ":" + j + 1 + " введены некорректно");
                         errorWindow.show();
                     }
                 }

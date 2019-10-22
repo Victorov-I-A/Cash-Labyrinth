@@ -27,7 +27,7 @@ public class Main extends Application {
             secondRoot.getChildren().add(controller.errorLabel);
 
             controller.errorWindow.setTitle("Error");
-            controller.errorWindow.setScene(new Scene(secondRoot, 200, 80));
+            controller.errorWindow.setScene(new Scene(secondRoot, 300, 80));
 
             controller.errorWindow.initModality(Modality.WINDOW_MODAL);
             controller.errorWindow.initOwner(primaryStage);

@@ -12,9 +12,8 @@ public class View {
 
 
     public void createMain() {
-        controller.errorLabel.setText("Значения введены некорректно");
-        controller.errorLabel.setPrefSize(200, 40);
-        controller.errorLabel.setLayoutX(10);
+        controller.errorLabel.setPrefSize(250, 40);
+        controller.errorLabel.setLayoutX(25);
         controller.errorLabel.setLayoutY(15);
 
         controller.playField.setStyle("-fx-background-color: linear-gradient(#f2f2f2, #d6d6d6),\n" +
