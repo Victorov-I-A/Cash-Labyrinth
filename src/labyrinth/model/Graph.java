@@ -1,16 +1,32 @@
 package labyrinth.model;
 
-import java.util.LinkedList;
-
 public class Graph {
-    private final int numberOfRooms = 64;
-    private LinkedList<Room>[] adjList;
+    private Room[][] matrixOfRoom = new Room[8][8];
 
-    public Graph() {
-        adjList = new LinkedList[numberOfRooms];
+    public Graph(int[][] matrix) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                matrixOfRoom[i][j] = new Room(matrix[i][j], i, j);
+            }
+    }
 
-        for (int i = 0; i < numberOfRooms; i++) {
-            adjList[0] = new LinkedList<>();
-        }
+    public Room[][] createGraph(int[][] horizonDoors, int[][] verticalDoors) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                Room firstRoom = matrixOfRoom[i][j];
+                Room secondRoom;
+
+                if (j != 7 && verticalDoors[i][j] == 1) {
+                    secondRoom = matrixOfRoom[i][j + 1];
+                    firstRoom.addToNeighbors(secondRoom);
+                    secondRoom.addToNeighbors(firstRoom);
+                }
+                if (i != 7 && horizonDoors[i][j] == 1) {
+                    secondRoom = matrixOfRoom[i + 1][j];
+                    firstRoom.addToNeighbors(secondRoom);
+                    secondRoom.addToNeighbors(firstRoom);
+                }
+            }
+        return matrixOfRoom;
     }
 }

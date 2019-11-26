@@ -41,16 +41,14 @@ public class View {
         controller.playField.setLayoutX(215);
         controller.playField.setLayoutY(115);
 
-        for (int i = 0; i < 15; i++){
-
-            int sizeOfCurrentLine = 8;
-            if (i % 2 == 0)
-                sizeOfCurrentLine--;
-
-            for (int j = 0; j < sizeOfCurrentLine; j++) {
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++) {
                 int x = i;
                 int y = j;
-                controller.matrixOfButton[x].get(y).setOnMouseClicked( e -> controller.doorAction(x, y));
+                if (i != 7)
+                    controller.horizonButtons[x][y].setOnMouseClicked( e -> controller.horizonDoorAction(x, y));
+                if (j != 7)
+                    controller.verticalButtons[x][y].setOnMouseClicked( e -> controller.verticalDoorAction(x, y));
             }
         }
 

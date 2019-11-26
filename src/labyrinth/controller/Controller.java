@@ -8,14 +8,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import labyrinth.model.Logic;
-
-import java.util.ArrayList;
-import java.util.List;
+import labyrinth.model.Pair;
 
 public class Controller {
     private Logic logic;
-    private int[][] matrixOfRoom;
-    private List<Integer>[] matrixOfDoor = new ArrayList[15];
+    private int[][] horizonDoors = new int[7][8];
+    private int[][] verticalDoors = new int[8][7];
     private boolean isStart = false;
     private boolean isEnd = false;
     private TextField start;
@@ -23,7 +21,8 @@ public class Controller {
     private int cash;
 
     public TextField[][] matrixOfTField = new TextField[8][8];
-    public List<Button>[] matrixOfButton = new ArrayList[15];
+    public Button[][] horizonButtons = new Button[7][8];
+    public Button[][] verticalButtons = new Button[8][7];
 
     public final Pane pane = new Pane();
     public final TextField cashField = new TextField();
@@ -43,54 +42,57 @@ public class Controller {
             hBox.prefHeight(770);
             hBox.prefWidth(70);
 
-            matrixOfButton[i] = new ArrayList<>();
-            matrixOfDoor[i] = new ArrayList<>();
+            if (i % 2 == 0) {
+                for (int j = 0; j < 8; j++) {
+                    TextField textField = new TextField();
+                    textField.setPrefSize(70, 70);
 
-            if (i % 2 == 0)
-                for (int j = 0; j < 15; j++) {
-                    if (j % 2 == 0) {
+                    hBox.getChildren().add(textField);
+                    matrixOfTField[i / 2][j] = textField;
 
-                        TextField textField = new TextField();
-                        textField.setPrefSize(70, 70);
-
-                        hBox.getChildren().add(textField);
-                        matrixOfTField[i / 2][j / 2] = textField;
-                    }
-                    else {
-
+                    if (j != 7) {
                         Button button = new Button();
                         button.setPrefSize(30, 70);
 
                         hBox.getChildren().add(button);
-                        matrixOfButton[i].add(button);
-                        matrixOfDoor[i].add(0);
+                        verticalButtons[i / 2][j] = button;
+                        verticalDoors[i / 2][j] = 0;
                     }
                 }
-            else {
+            }
+            if (i % 2 == 1) {
                 hBox.setSpacing(30);
 
                 for (int j = 0; j < 8; j++) {
-
                     Button button = new Button();
                     button.setPrefSize(70, 30);
 
                     hBox.getChildren().add(button);
-                    matrixOfButton[i].add(button);
-                    matrixOfDoor[i].add(0);
+                    horizonButtons[i / 2][j] = button;
+                    horizonDoors[i / 2][j] = 0;
                 }
             }
             playField.getChildren().add(hBox);
         }
     }
 
-    public void doorAction(int x, int y) {
-        if (matrixOfDoor[x].get(y).equals(0)) {
-            matrixOfButton[x].get(y).setStyle("-fx-background-color: white");
-            matrixOfDoor[x].set(y, 1);
+    public void horizonDoorAction(int x, int y) {
+        if (horizonDoors[x][y] == 0) {
+            horizonButtons[x][y].setStyle("-fx-background-color: white");
+            horizonDoors[x][y] = 1;
+        } else {
+            horizonButtons[x][y].setStyle("-fx-background-color");
+            horizonDoors[x][y] = 0;
         }
-        else {
-            matrixOfButton[x].get(y).setStyle("-fx-background-color");
-            matrixOfDoor[x].set(y, 0);
+    }
+
+    public void verticalDoorAction(int x, int y) {
+        if (verticalDoors[x][y] == 0) {
+            verticalButtons[x][y].setStyle("-fx-background-color: white");
+            verticalDoors[x][y] = 1;
+        } else {
+            verticalButtons[x][y].setStyle("-fx-background-color");
+            verticalDoors[x][y] = 0;
         }
     }
 
@@ -142,45 +144,119 @@ public class Controller {
                 matrixOfTField[i][j].setText("");
                 matrixOfTField[i][j].setEditable(true);
 
-                matrixOfRoom = null;
-                isEnd = false;
-                isStart = false;
-                start = null;
-                end = null;
-            }
+                if (i != 7) {
+                    horizonButtons[i][j].setStyle("-fx-background-color");
+                    horizonButtons[i][j].setDisable(false);
 
-        for (int i = 0; i < 15; i++) {
-            matrixOfButton[i].forEach(button -> button.setStyle("-fx-background-color"));
-            int size = matrixOfDoor[i].size();
-            for (int j = 0; j < size; j++)
-                matrixOfDoor[i].set(j, 0);
-        }
+                    horizonDoors[i][j] = 0;
+                }
+                if (j != 7) {
+                    verticalButtons[i][j].setStyle("-fx-background-color");
+                    verticalButtons[i][j].setDisable(false);
+
+                    verticalDoors[i][j] = 0;
+                }
+
+            }
+        startButton.setText("Старт!");
+        startButton.setOnMouseClicked(e -> startAction());
+
+        isEnd = false;
+        isStart = false;
+        start = null;
+        end = null;
+
+        cash = 0;
+        cashField.setText("");
     }
 
     public void startAction() {
-        int[][] matrixOfRoom = new int[8][8];
+        if (!isStart) {
+            errorLabel.setText("Выберите поле старта");
+            errorWindow.show();
+            return;
+        }
+
+        if (!isEnd) {
+            errorLabel.setText("Выберите поле выхода");
+            errorWindow.show();
+            return;
+        }
 
         try {
             cash = Integer.parseInt(cashField.getText());
-        }  catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             errorLabel.setText("Поле с начальной суммой не заполнено");
             errorWindow.show();
+            return;
         }
+
+        int[][] matrixOfRoom = new int[8][8];
+        Pair startCoordinate = null;
+        Pair endCoordinate = null;
 
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
-                if (matrixOfTField[i][j] != end && matrixOfTField[i][j] != start) {
-                    try {
-                    matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
-                    } catch (NumberFormatException e) {
-                        errorLabel.setText("Данные в поле " + i + 1 + ":" + j + 1 + " введены некорректно");
-                        errorWindow.show();
-                    }
-                }
-                else
+                if (matrixOfTField[i][j] == start) {
                     matrixOfRoom[i][j] = 0;
+                    startCoordinate = new Pair(i, j);
+                } else if (matrixOfTField[i][j] == end) {
+                    matrixOfRoom[i][j] = 0;
+                    endCoordinate = new Pair(i, j);
+                } else try {
+                    matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
+                } catch (NumberFormatException e) {
+                    errorLabel.setText("Данные в поле " + (i + 1) + ":" + (j + 1) + " введены некорректно");
+                    errorWindow.show();
+                    redactionAction();
+                    return;
+                }
+                matrixOfTField[i][j].setEditable(false);
+                if (i != 7)
+                    horizonButtons[i][j].setDisable(true);
+                if (j != 7)
+                    verticalButtons[i][j].setDisable(true);
             }
 
-        logic = new Logic(matrixOfRoom, matrixOfDoor);
+        logic = new Logic(matrixOfRoom, horizonDoors, verticalDoors, startCoordinate, endCoordinate);
+
+
+        if (logic.getFinalWay().isEmpty()) {
+            errorLabel.setText("Поле задано неверно");
+            errorWindow.show();
+            redactionAction();
+            return;
+        }
+
+        for (Pair coordinate : logic.getFinalWay()) {
+            matrixOfTField[coordinate.getX()][coordinate.getY()].setStyle("-fx-background-color: #B0E0E6");
+        }
+
+        cashField.setText(String.valueOf(cash + logic.getFinalCost()));
+
+        startButton.setText("Редактировать");
+        startButton.setOnMouseClicked(e -> redactionAction());
+    }
+
+    public void redactionAction() {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                if (matrixOfTField[i][j] != end && matrixOfTField[i][j] != start) {
+                    matrixOfTField[i][j].setStyle("-fx-background-color");
+                    matrixOfTField[i][j].setEditable(true);
+                }
+
+                if (i != 7) {
+                    horizonButtons[i][j].setDisable(false);
+                }
+                if (j != 7) {
+                    verticalButtons[i][j].setDisable(false);
+                }
+
+            }
+        cashField.setText(String.valueOf(cash));
+
+        startButton.setText("Старт!");
+        startButton.setOnMouseClicked(e -> startAction());
     }
 }
