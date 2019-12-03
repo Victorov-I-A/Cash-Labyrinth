@@ -175,12 +175,14 @@ public class Controller {
             errorLabel.setText("Выберите поле старта");
             errorWindow.show();
             return;
+
         }
 
         if (!isEnd) {
             errorLabel.setText("Выберите поле выхода");
             errorWindow.show();
             return;
+
         }
 
         try {
@@ -189,6 +191,7 @@ public class Controller {
             errorLabel.setText("Поле с начальной суммой не заполнено");
             errorWindow.show();
             return;
+
         }
 
         int[][] matrixOfRoom = new int[8][8];
@@ -206,10 +209,8 @@ public class Controller {
                 } else try {
                     matrixOfRoom[i][j] = Integer.parseInt(matrixOfTField[i][j].getText());
                 } catch (NumberFormatException e) {
-                    errorLabel.setText("Данные в поле " + (i + 1) + ":" + (j + 1) + " введены некорректно");
-                    errorWindow.show();
-                    redactionAction();
-                    return;
+                    matrixOfTField[i][j].setText("0");
+                    matrixOfRoom[i][j] = 0;
                 }
                 matrixOfTField[i][j].setEditable(false);
                 if (i != 7)
@@ -219,7 +220,7 @@ public class Controller {
             }
 
         logic = new Logic(matrixOfRoom, horizonDoors, verticalDoors, startCoordinate, endCoordinate);
-
+        logic.findWay();
 
         if (logic.getFinalWay().isEmpty()) {
             errorLabel.setText("Поле задано неверно");

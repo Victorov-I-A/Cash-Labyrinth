@@ -6,7 +6,7 @@ public class Room {
 
     private int cost;
     private Pair coordinate;
-    private List<Room> neighbors = new ArrayList<>();
+    private List<Room> neighbors = new ArrayList<>(); //соседние клетки, в которые можно попасть
 
     public Room(int cost, int x, int y) {
         this.cost = cost;
@@ -28,6 +28,4 @@ public class Room {
     public void addToNeighbors(Room room) {
         neighbors.add(room);
     }
-
-    public void removeFromNeighbors(Room room) {neighbors.remove(room); }
 }

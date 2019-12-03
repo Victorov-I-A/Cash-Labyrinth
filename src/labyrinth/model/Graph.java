@@ -2,15 +2,20 @@ package labyrinth.model;
 
 public class Graph {
     private Room[][] matrixOfRoom = new Room[8][8];
+    private Room startRoom;
+    private Room endRoom;
 
-    public Graph(int[][] matrix) {
+
+    public Graph(int[][] matrix, Pair startCoordinate, Pair endCoordinate) {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
                 matrixOfRoom[i][j] = new Room(matrix[i][j], i, j);
             }
+        startRoom = matrixOfRoom[startCoordinate.getX()][startCoordinate.getY()];
+        endRoom = matrixOfRoom[endCoordinate.getX()][endCoordinate.getY()];
     }
 
-    public Room[][] createGraph(int[][] horizonDoors, int[][] verticalDoors) {
+    public void createGraph(int[][] horizonDoors, int[][] verticalDoors) {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
                 Room firstRoom = matrixOfRoom[i][j];
@@ -27,6 +32,17 @@ public class Graph {
                     secondRoom.addToNeighbors(firstRoom);
                 }
             }
+    }
+
+    public Room getEndRoom() {
+        return endRoom;
+    }
+
+    public Room getStartRoom() {
+        return startRoom;
+    }
+
+    public Room[][] getMatrixOfRoom() {
         return matrixOfRoom;
     }
 }

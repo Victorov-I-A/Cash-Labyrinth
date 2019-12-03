@@ -4,20 +4,21 @@ import java.util.*;
 
 public class Logic {
     private HashSet<Room> finalWay = new HashSet<>();
-    private int finalCost = -2147483648;
+    private int finalCost;
 
     private Room startRoom;
     private Room endRoom;
 
     public Logic(int[][] matrix, int[][] horizonDoors, int[][] verticalDoors, Pair startCoordinate, Pair endCoordinate) {
-        Room[][] matrixOfRoom = new Graph(matrix).createGraph(horizonDoors,verticalDoors);
-        startRoom = matrixOfRoom[startCoordinate.getX()][startCoordinate.getY()];
-        endRoom = matrixOfRoom[endCoordinate.getX()][endCoordinate.getY()];
+        Graph graph = new Graph(matrix, startCoordinate, endCoordinate);
+        graph.createGraph(horizonDoors,verticalDoors);
+        startRoom = graph.getStartRoom();
+        endRoom = graph.getEndRoom();
     }
 
     public void findWay() {
         HashSet<Room> finalWay = new HashSet<>();
-        int finalCost = -2147483648;
+        int finalCost = Integer.MIN_VALUE;
 
         ArrayDeque<Triplet> allWays = new ArrayDeque<>();
 
@@ -32,10 +33,9 @@ public class Logic {
                     finalWay = previous.getWay();
                     finalCost = previous.getCost();
                 } else if
-                    (!previous.getWay().contains(neighbor)) {
+                    (!previous.getWay().contains(neighbor) && neighbor != endRoom) {
                     allWays.addLast(previous.nextStep(neighbor));
                 }
-                neighbor.removeFromNeighbors(previous.getRoom());
             }
 
             allWays.removeFirst();

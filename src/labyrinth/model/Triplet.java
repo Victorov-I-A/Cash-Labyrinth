@@ -26,9 +26,7 @@ public class Triplet {
     }
 
     public Triplet nextStep(Room room) {
-        HashSet<Room> newWay = new HashSet<>();
-
-        getWay().forEach(newWay::add);
+        HashSet<Room> newWay = new HashSet<>(getWay());
         newWay.add(room);
 
         return new Triplet(newWay, room, getCost() + room.getCost());
